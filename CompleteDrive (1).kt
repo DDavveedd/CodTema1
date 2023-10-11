@@ -77,7 +77,7 @@ class CompleteDrive: OpMode() {
                 isOuttakeClawOpen = true;
             } else if(gp2.checkToggle(Gamepad.Button.DPAD_DOWN) && isOuttakeClawOpen){
 
-                outtake.outtakeOpenClaw();
+                outtake.outtakeCloseClaw();
                 isOuttakeClawOpen = false;
             }
 
@@ -85,10 +85,18 @@ class CompleteDrive: OpMode() {
 
             if(gp2.checkToggle(Gamepad.Button.RIGHT_BUMPER)){
                 outtake.outtakeMotorsGoUp();
+
+                if(outtake.getMidPozInt() >= 750){
+                    outtake.outtakeOpenClaw();
+                }
             }
+
 
             if(gp2.checkToggle(Gamepad.Button.LEFT_BUMPER)){
                 outtake.outtakeMotorsGoDown();
+
+                outtake.outtakeServoArmInit();
+                outtake.intakeServoArmInit();
             }
 
 
