@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.hardware
 
+import android.annotation.SuppressLint
 import com.qualcomm.hardware.rev.RevTouchSensor
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
@@ -35,8 +37,8 @@ class Outtake(hwMap: HardwareMap) {
 
 
 
-      /*** AUTO ***/
-      //START
+        /*** AUTO ***/
+        //START
 
         const val intakeClawOpen = 0.78;
         const val intakeClawClose = 0.34;
@@ -50,6 +52,9 @@ class Outtake(hwMap: HardwareMap) {
 
         const val outtakeMotorPosUp = 1500;
         const val outtakeMotorInitPos = 0;
+
+        const val outtakeArmInitPos = 0.0;
+        const val intakeArmInitPos = 0.8;
 
     }
 
@@ -68,16 +73,31 @@ class Outtake(hwMap: HardwareMap) {
 
 
 
-    
+
 
     //SLIDER positions are protected in order to remain private. That's why we use these 3 functions to determine where the slider is
     //relative to target position
+    init {
+        intakeOpenClaw()
+        outtakeOpenClaw()
 
+        outtakeMotorLeft.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        outtakeMotorRight.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+
+        outtakeMotorRight.direction = DcMotorSimple.Direction.FORWARD
+
+        outtakeMotorRight.power = 0.0
+        outtakeMotorLeft.power = 0.0
+
+        outtakeMotorLeft.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        outtakeMotorRight.mode = DcMotor.RunMode.RUN_USING_ENCODER;
+        // mode , directia, run using encoder, putere initala 0,
+    }
     //functions
 
-     fun intakeOpenClaw(){
-      intakeServoClaw.position = intakeClawOpen;
-  }
+    fun intakeOpenClaw(){
+        intakeServoClaw.position = intakeClawOpen;
+    }
 
     fun intakeCloseClaw(){
         intakeServoClaw.position = intakeClawClose;
@@ -110,10 +130,17 @@ class Outtake(hwMap: HardwareMap) {
         outtakeMotorLeft.power = 0.5;
         outtakeMotorRight.power = 0.5;
 
-        if(outtakeMotorLeft.currentPosition >= outtakeMotorPosUp / 2 && outtakeMotorRight.currentPosition >= outtakeMotorPosUp / 2){
-            outtakeServoArm.position = 0.8;
-        }
 
+
+    }
+
+
+    fun outtakeServoArmInit(){
+        outtakeServoArm.position = outtakeArmInitPos;
+    }
+
+    fun intakeServoArmInit(){
+        intakeServoArm.position = intakeArmInitPos;
     }
 
     fun outtakeMotorsGoDown(){
@@ -127,13 +154,14 @@ class Outtake(hwMap: HardwareMap) {
         outtakeMotorLeft.power = 0.2;
         outtakeMotorRight.power = 0.2;
 
-        outtakeServoArm.position = 0.0;
 
-        intakeServoArm.position = 0.8;
-
-        outtakeOpenClaw();
+        outtakeMotorLeft.mode = DcMotor.RunMode.RESET_ENCODERS
+        outtakeMotorRight.mode = DcMotor.RunMode.RESET_ENCODERS
 
     }
-
+    fun getMidPozInt ():Int
+    {
+        return outtakeMotorPosUp-outtakeMotorRight.currentPosition
+    }
 
 }
